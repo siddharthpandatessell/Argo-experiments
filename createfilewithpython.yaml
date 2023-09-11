@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: python-random-number-generator-
+  namespace: argo
+spec:
+  entrypoint: generator
+  arguments:
+    parameters:
+      - name: min
+        value: 0
+      - name: max
+        value: 10
+  templates:
+  - name: generator
+    inputs:
+      parameters:
+        - name: min
+        - name: max
+    script:
+      image: python:3.8
+      command: [python]
+      source: |
+        file_name = 'my_file.txt'
+        f = open(file_name, 'w+')  # open file in write mode
+        f.write('python rules')
+        f.close()

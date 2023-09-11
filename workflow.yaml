@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: new-workflow-  # Name of this Workflow
+spec:
+  entrypoint: whalesay        # Defines "whalesay" as the "main" template
+  templates:
+  - name: whalesay            # Defining the "whalesay" template
+    container:
+      image: docker/whalesay
+      command: [cowsay]
+      args: ["hello world"]   # This template runs "cowsay" in the "whalesay" image with arguments "hello world"
+  - name: gen-random-int
+    script:
+      image: python:alpine3.6
+      command: [python]
+      source: |
+        import random
+        i = random.randint(1, 100)
+        print(i)
+  - name: random-fail-template
+    retryStrategy:
+      limit: 10
+    container:
+      image: python:alpine3.6
+      command: [python3, -c]
+      args:
+        - script.py
